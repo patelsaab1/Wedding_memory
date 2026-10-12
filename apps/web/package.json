@@ -1,0 +1,27 @@
+{
+  "name": "@wedding-memory/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@wedding-memory/shared": "*",
+    "axios": "^1.8.4",
+    "page-flip": "^2.0.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-pageflip": "^2.0.3",
+    "react-router-dom": "^7.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.14",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.14",
+    "vite": "^6.2.2"
+  }
+}
