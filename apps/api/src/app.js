@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { config } from './config/index.js';
 import { registerRoutes } from './routes/index.js';
+import { registerWebApp } from './serve-web.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { requestLogger } from './middleware/request-logger.js';
 import { requestIdMiddleware } from './middleware/request-id.js';
@@ -32,6 +33,7 @@ export function createApp() {
   app.use(csrfProtection);
 
   registerRoutes(app);
+  registerWebApp(app);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

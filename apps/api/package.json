@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "build": "node --check src/server.js && node --check src/app.js",
+    "build": "node --check src/server.js && node --check src/app.js && node --check src/serve-web.js",
     "typecheck": "node --check src/server.js && node --check src/app.js && node --check src/services/storage/index.js && node --check src/services/storage/storage-manager.js && node --check src/services/storage/create-storage-manager.js && node --check src/services/storage/providers/google-drive.provider.js && node --check src/services/storage/providers/google-drive.client.js && node --check src/services/storage/providers/cloudflare-r2.provider.js && node --check src/services/gallery/gallery.service.js && node --check src/services/gallery/gallery-catalog.js && node --check src/routes/gallery.routes.js && node --check src/controllers/gallery.controller.js",
     "lint": "eslint src tests",
     "test": "vitest run",
