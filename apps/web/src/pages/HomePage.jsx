@@ -95,6 +95,20 @@ function highlightPhotos(gallery) {
   return stills(gallery?.haldi?.photos).slice(0, 6);
 }
 
+const HERO_PORTRAITS = [
+  { file: '4Q3A8413.JPG', alt: 'Roshni' },
+  { file: '4Q3A8225.JPG', alt: 'Rohit' },
+];
+
+function heroPortraits(pool) {
+  const chosen = HERO_PORTRAITS.map((portrait) => {
+    const photo = pool.find((item) => item.name?.toLowerCase() === portrait.file.toLowerCase());
+    return photo ? { ...photo, alt: portrait.alt } : null;
+  }).filter(Boolean);
+  if (chosen.length) return chosen;
+  return pool.slice(0, 2).map((photo) => ({ ...photo, alt: photo.name || 'Rohit and Roshni' }));
+}
+
 const fallbackSections = [
   { key: 'hero', enabled: true, sortOrder: 0, eyebrow: 'Private collection', title: 'Rohit & Roshni', description: 'The wedding day, kept for the family. Scroll through the hours, then the photographs that stayed.' },
   { key: 'couple_story', enabled: true, sortOrder: 1, eyebrow: 'Together', title: 'Us.', description: 'Two people. One story. A thousand memories.' },
@@ -183,6 +197,8 @@ export function HomePage() {
     return { pool, feature, beside };
   }, [gallery]);
 
+  const portraits = heroPortraits(exhibition.pool);
+
   function openViewer(photos, index) {
     const frames = photos.filter((photo) => photo?.previewPath);
     if (!frames.length) return;
@@ -223,16 +239,23 @@ export function HomePage() {
               </a>
             </div>
           </div>
-          {exhibition.pool[0] ? (
-            <figure className="photo-frame mx-auto w-full max-w-md lg:max-w-none">
-              <img
-                src={exhibition.pool[0].previewPath}
-                alt={exhibition.pool[0].name || 'Rohit and Roshni'}
-                fetchPriority="high"
-                decoding="async"
-                className="motion-breathe aspect-[4/5] max-h-[70vh] w-full object-cover object-[center_22%] lg:max-h-[36rem]"
-              />
-            </figure>
+          {portraits.length ? (
+            <div className="mx-auto grid w-full max-w-md grid-cols-2 items-start gap-3 sm:gap-4 lg:max-w-none">
+              {portraits.map((photo, index) => (
+                <figure
+                  key={photo.id}
+                  className={`photo-frame ${index === 1 ? 'mt-8 sm:mt-12' : ''}`}
+                >
+                  <img
+                    src={photo.previewPath}
+                    alt={photo.alt}
+                    fetchPriority={index === 0 ? 'high' : 'auto'}
+                    decoding="async"
+                    className="aspect-[3/4] max-h-[70vh] w-full object-cover object-[center_28%] lg:max-h-[32rem]"
+                  />
+                </figure>
+              ))}
+            </div>
           ) : null}
         </div>
       </section>
