@@ -38,10 +38,10 @@ export function GalleryPage() {
     <div>
       <section className="relative overflow-hidden border-b border-stone-200/70 bg-white">
         <FloatingOrbs />
-        <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-24">
           <Reveal>
             <p className="text-gold text-[11px] font-medium tracking-[0.28em] uppercase">Gallery</p>
-            <h1 className="font-serif text-ink mt-3 text-4xl sm:text-6xl">{coupleName}</h1>
+            <h1 className="font-serif text-ink mt-3 text-[clamp(2.2rem,9vw,3.75rem)] leading-tight">{coupleName}</h1>
             <p className="text-muted mt-4 max-w-xl text-base leading-relaxed">
               Haldi, featured frames, and the albums saved in the Photos folder.
             </p>

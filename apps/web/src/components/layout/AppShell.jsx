@@ -15,10 +15,10 @@ export function AppShell() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-[100dvh] flex-col overflow-x-clip">
       <ScrollProgress />
       <AppHeader />
-      <main className="flex-1">
+      <main className="min-w-0 flex-1">
         <Outlet />
       </main>
       <SiteFooter />

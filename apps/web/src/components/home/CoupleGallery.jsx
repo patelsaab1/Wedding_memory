@@ -18,16 +18,16 @@ const PRINTS = [
  *   onOpen: (index: number) => void,
  * }} props
  */
-export function CoupleGallery({ eyebrow, title, description, photos, onOpen }) {
+export function CoupleGallery({ id, eyebrow, title, description, photos, onOpen }) {
   const ref = useRef(null);
   const shown = useInView(ref);
   const frames = photos.slice(0, PRINTS.length);
 
   return (
-    <section ref={ref} className={`couple-prints bg-surface ${shown ? 'is-shown' : ''}`}>
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+    <section id={id} ref={ref} className={`couple-prints scroll-mt-20 bg-surface ${shown ? 'is-shown' : ''}`}>
+      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-28">
         <p className="text-gold text-[11px] font-medium tracking-[0.32em] uppercase">{eyebrow || 'Art prints'}</p>
-        <h2 className="font-serif mt-3 text-4xl sm:text-6xl">{title}</h2>
+        <h2 className="font-serif mt-3 text-[clamp(2.2rem,9vw,3.75rem)]">{title}</h2>
         {description ? <p className="text-muted mt-4 max-w-md text-sm leading-relaxed">{description}</p> : null}
         {frames.length ? (
           <div className="print-gallery">
@@ -39,7 +39,7 @@ export function CoupleGallery({ eyebrow, title, description, photos, onOpen }) {
                   photo={photo}
                   treatment={print.treatment}
                   label={print.label}
-                  caption={print.caption}
+                  caption={photo.caption || print.caption}
                   rotate={print.rotate}
                   depth={10 + index * 2}
                   className={print.place}

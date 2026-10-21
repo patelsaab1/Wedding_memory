@@ -1,32 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
-
-const CHAPTERS = [
-  { mark: '01', title: 'The beginning', line: 'Before everyone arrived.' },
-  { mark: '02', title: 'The ceremony', line: 'Two souls. One beautiful beginning.' },
-  { mark: '03', title: 'The celebration', line: 'The laughter between moments.' },
-  { mark: '04', title: 'The people', line: 'That one perfect smile.' },
-  { mark: '05', title: 'The little moments', line: 'The moments we did not plan.' },
-];
+import { COUPLE_STORY } from '@/components/home/couple-story';
 
 /**
- * Sticky photograph on the left. Chapters on the right change the frame.
- * On small screens the photograph stays in normal flow.
+ * Sticky portrait on the left. Chapters on the right change the frame.
  * @param {{
- *   title: string,
- *   description?: string,
- *   photos: Array<{ id: string, name: string, previewPath: string }>,
+ *   id?: string,
+ *   photos: Array<{
+ *     id: string,
+ *     mark?: string,
+ *     kicker?: string,
+ *     title?: string,
+ *     line?: string,
+ *     whisper?: string,
+ *     alt?: string,
+ *     name?: string,
+ *     previewPath: string,
+ *     position?: string,
+ *     width?: number,
+ *     height?: number,
+ *   }>,
  *   onOpen: (index: number) => void,
  * }} props
  */
-export function CoupleStory({ title, description, photos, onOpen }) {
-  const frames = photos.slice(0, CHAPTERS.length);
-  const chapters = CHAPTERS.slice(0, Math.max(frames.length, 0));
+export function CoupleStory({ id = 'home-couple_story', photos, onOpen }) {
+  const chapters = photos.length ? photos : COUPLE_STORY.chapters;
   const [active, setActive] = useState(0);
   const itemRefs = useRef([]);
 
   useEffect(() => {
     const nodes = itemRefs.current.filter(Boolean);
     if (!nodes.length) return undefined;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -36,57 +44,69 @@ export function CoupleStory({ title, description, photos, onOpen }) {
         const next = Number(visible.target.getAttribute('data-index'));
         if (!Number.isNaN(next)) setActive(next);
       },
-      { rootMargin: '-35% 0px -40% 0px', threshold: [0.35, 0.6] },
+      { rootMargin: '-32% 0px -38% 0px', threshold: [0.35, 0.6] },
     );
     nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  }, [frames.length]);
+  }, [chapters.length]);
 
-  const photo = frames[active] || frames[0];
+  const photo = chapters[active] || chapters[0];
 
   return (
-    <section id="memory-story" className="story-section bg-white">
-      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-20 sm:px-6 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-        <div className="lg:sticky lg:top-28 lg:self-start">
-          <p className="text-gold text-[11px] font-medium tracking-[0.32em] uppercase">Together</p>
-          <h2 className="font-serif mt-4 text-5xl leading-none sm:text-7xl">{title}</h2>
-          {description ? <p className="text-muted mt-5 max-w-sm text-sm leading-relaxed">{description}</p> : null}
-          {photo ? (
-            <button type="button" className="mt-8 block w-full text-left" onClick={() => onOpen(active)}>
-              <img
-                key={photo.id}
-                src={photo.previewPath}
-                alt={photo.name || 'Wedding photograph'}
-                className="album-fade aspect-[4/5] max-h-[70vh] w-full object-cover"
-                loading="lazy"
-                decoding="async"
-              />
-            </button>
+    <section id={id} className="story-section us-story scroll-mt-20">
+      <div className="us-story__grid">
+        <div className="us-story__stage">
+          <p className="text-gold text-[11px] font-medium tracking-[0.32em] uppercase">{COUPLE_STORY.eyebrow}</p>
+          <h2 className="font-serif mt-4 text-[clamp(2.6rem,10vw,4.6rem)] leading-none">{COUPLE_STORY.title}</h2>
+          <p className="salon-pair">
+            Rohit <span aria-hidden="true">♥</span> Roshni
+          </p>
+          <p className="text-muted mt-4 max-w-sm text-sm leading-relaxed">{COUPLE_STORY.description}</p>
+
+          {photo?.previewPath ? (
+            <figure className="us-story__frame">
+              <button type="button" className="us-story__shot" onClick={() => onOpen(active)}>
+                <img
+                  key={photo.id}
+                  src={photo.previewPath}
+                  alt={photo.alt || photo.name || 'Wedding photograph'}
+                  width={photo.width || 800}
+                  height={photo.height || 1200}
+                  loading={active === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  className="us-story__photo album-fade"
+                  style={{ objectPosition: photo.position || 'center 18%' }}
+                />
+              </button>
+              <figcaption className="us-story__caption">
+                <span>{photo.kicker}</span>
+                <span aria-hidden="true">·</span>
+                <span>{photo.title}</span>
+              </figcaption>
+            </figure>
           ) : (
             <p className="text-muted mt-8 text-sm">Couple photographs will hang here once the gallery has frames.</p>
           )}
         </div>
 
-        <ol className="flex flex-col">
+        <ol className="us-story__chapters">
           {chapters.map((chapter, index) => {
             const selected = index === active;
             return (
               <li
-                key={chapter.mark}
+                key={chapter.id || chapter.mark}
                 ref={(node) => {
                   itemRefs.current[index] = node;
                 }}
                 data-index={index}
-                className="border-t border-stone-200 py-10 last:border-b"
+                className={`us-story__chapter ${selected ? 'is-active' : ''}`}
               >
-                <button type="button" className="w-full text-left" onClick={() => setActive(index)}>
-                  <p className={`text-[11px] tracking-[0.28em] uppercase ${selected ? 'text-wine' : 'text-gold'}`}>
-                    {chapter.mark}
-                  </p>
-                  <h3 className={`font-serif mt-3 text-3xl sm:text-4xl ${selected ? 'text-ink' : 'text-stone-400'}`}>
-                    {chapter.title}
-                  </h3>
-                  <p className="text-muted mt-3 max-w-sm text-sm leading-relaxed">{chapter.line}</p>
+                <button type="button" className="us-story__btn" onClick={() => setActive(index)}>
+                  <p className="us-story__mark">{chapter.mark}</p>
+                  <p className="us-story__kicker">{chapter.kicker}</p>
+                  <h3 className="font-serif">{chapter.title}</h3>
+                  <p className="us-story__line">{chapter.line}</p>
+                  {chapter.whisper ? <p className="us-story__whisper">{chapter.whisper}</p> : null}
                 </button>
               </li>
             );

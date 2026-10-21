@@ -32,13 +32,13 @@ export function LoginPage() {
   }
 
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-surface px-4 py-16">
+    <section className="relative flex min-h-[100dvh] items-center overflow-x-clip bg-surface px-4 py-10 sm:py-16">
       <FloatingOrbs />
-      <Reveal className="relative mx-auto w-full max-w-md rounded-3xl border border-white bg-white/90 p-6 shadow-sm sm:p-8">
+      <Reveal className="relative mx-auto w-full max-w-md rounded-3xl border border-white bg-white/90 p-5 shadow-sm sm:p-8">
         <p className="text-gold text-[11px] font-medium tracking-[0.28em] uppercase">Welcome</p>
         <h1 className="font-serif text-ink mt-3 text-4xl">Sign in</h1>
         <p className="text-muted mt-3 text-sm leading-relaxed">
-          A private entrance for Rohit and Roshni’s family.
+          This house opens with email and password. Super admin uses the same door — not Google sign-in.
         </p>
         {isAuthenticated ? (
           <p className="mt-4 rounded-xl border border-gold/30 bg-blush px-3 py-2 text-sm">
