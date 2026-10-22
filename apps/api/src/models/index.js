@@ -6,4 +6,5 @@ export { Document } from './document.model.js';
 export { WebsiteSection } from './website-section.model.js';
 export { ShareLink } from './share-link.model.js';
 export { StorageConnection } from './storage-connection.model.js';
+export { DriveCredential } from './drive-credential.model.js';
 export { RefreshSession } from './refresh-session.model.js';

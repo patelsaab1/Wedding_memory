@@ -38,6 +38,15 @@ export class GoogleDriveProvider extends StorageProvider {
     return ['clientId', 'clientSecret', 'refreshToken'];
   }
 
+  /**
+   * Hot-apply a refresh token without restarting the API.
+   * @param {string} refreshToken
+   */
+  setRefreshToken(refreshToken) {
+    this.config.refreshToken = String(refreshToken || '');
+    this.client = null;
+  }
+
   getClient() {
     if (!this.client) {
       this.client = createGoogleDriveClient({

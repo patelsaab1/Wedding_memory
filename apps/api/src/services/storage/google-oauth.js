@@ -11,9 +11,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envPath = path.resolve(__dirname, '../../../.env');
 
 /**
- * @param {{ clientId: string, redirectUri: string, state: string }} input
+ * @param {{ clientId: string, redirectUri: string, state: string, loginHint?: string }} input
  */
-export function buildGoogleDriveAuthUrl({ clientId, redirectUri, state }) {
+export function buildGoogleDriveAuthUrl({ clientId, redirectUri, state, loginHint }) {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -23,6 +23,9 @@ export function buildGoogleDriveAuthUrl({ clientId, redirectUri, state }) {
     prompt: 'consent',
     state,
   });
+  if (loginHint) {
+    params.set('login_hint', loginHint);
+  }
 
   return `${AUTH_URL}?${params.toString()}`;
 }
@@ -81,12 +84,16 @@ export async function exchangeGoogleDriveCode({
  * @param {string} refreshToken
  */
 export function saveGoogleDriveRefreshToken(refreshToken) {
+  if (!fs.existsSync(envPath)) {
+    return false;
+  }
   const raw = fs.readFileSync(envPath, 'utf8');
   const line = `GOOGLE_DRIVE_REFRESH_TOKEN=${formatEnvValue(refreshToken)}`;
   const next = /^GOOGLE_DRIVE_REFRESH_TOKEN=.*$/m.test(raw)
     ? raw.replace(/^GOOGLE_DRIVE_REFRESH_TOKEN=.*$/m, line)
     : `${raw.trimEnd()}\n${line}\n`;
   fs.writeFileSync(envPath, next, 'utf8');
+  return true;
 }
 
 /**
