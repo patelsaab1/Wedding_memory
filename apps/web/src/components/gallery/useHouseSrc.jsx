@@ -1,25 +1,6 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Photograph that prefers Drive, then the local house file.
- */
-export function HouseImg({ photo, alt, className, loading = 'lazy', decoding = 'async', full = false, style }) {
-  const { src, onError } = useHouseSrc(photo, { full });
-  if (!src) return null;
-  return (
-    <img
-      src={src}
-      alt={alt ?? photo?.alt ?? photo?.name ?? 'Wedding photograph'}
-      className={className}
-      loading={loading}
-      decoding={decoding}
-      style={style}
-      onError={onError}
-    />
-  );
-}
-
-/**
  * Prefer the Drive stream. If that file cannot load, fall back to the local house photograph.
  * @param {{ previewPath?: string, fullPath?: string, localPath?: string, localFull?: string } | null | undefined} photo
  * @param {{ full?: boolean }} [options]
@@ -43,4 +24,23 @@ export function useHouseSrc(photo, options = {}) {
       if (local && src !== local) setSrc(local);
     },
   };
+}
+
+/**
+ * Photograph that prefers Drive, then the local house file.
+ */
+export function HouseImg({ photo, alt, className, loading = 'lazy', decoding = 'async', full = false, style }) {
+  const { src, onError } = useHouseSrc(photo, { full });
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt={alt ?? photo?.alt ?? photo?.name ?? 'Wedding photograph'}
+      className={className}
+      loading={loading}
+      decoding={decoding}
+      style={style}
+      onError={onError}
+    />
+  );
 }
