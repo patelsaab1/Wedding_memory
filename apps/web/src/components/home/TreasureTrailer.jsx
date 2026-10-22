@@ -17,7 +17,7 @@ export function TreasureTrailer({ trailer }) {
           <p className="text-[11px] font-medium tracking-[0.32em] text-white/60 uppercase">
             Wedding treasure
           </p>
-          <h2 className="font-serif mt-4 max-w-3xl text-4xl leading-tight sm:text-6xl">The trailer</h2>
+          <h2 className="font-serif mt-4 max-w-3xl text-[clamp(2.2rem,9vw,3.75rem)] leading-tight">The trailer</h2>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-white/75">
             The film kept closest. Press play when you want the day back in one sitting.
           </p>

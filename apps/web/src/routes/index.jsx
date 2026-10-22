@@ -67,6 +67,9 @@ export function AppRoutes() {
           <Route path="status" element={<StatusPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="home" element={<Navigate to="/" replace />} />
+          <Route path="Home" element={<Navigate to="/" replace />} />
+          <Route path="Gallery" element={<Navigate to="/gallery" replace />} />
+          <Route path="Status" element={<Navigate to="/status" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

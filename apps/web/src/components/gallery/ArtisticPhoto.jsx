@@ -34,7 +34,7 @@ export function ArtisticPhoto({
       <span className="art-mat">
         <img
           src={photo.previewPath}
-          alt={photo.name || 'Wedding photograph'}
+          alt={photo.alt || photo.name || 'Wedding photograph'}
           loading="lazy"
           decoding="async"
           className="art-img"

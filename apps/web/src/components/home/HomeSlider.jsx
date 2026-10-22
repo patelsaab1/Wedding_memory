@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { forwardRef, memo, useCallback, useEffect, useRef, useState } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import { PhotoLightbox } from '@/components/gallery/PhotoLightbox';
 
@@ -15,6 +15,70 @@ const NoteSheet = forwardRef(function NoteSheet({ eyebrow, title, line }, ref) {
     </article>
   );
 });
+
+function sameAlbum(previous, next) {
+  if (previous.showNote !== next.showNote || previous.reduced !== next.reduced) return false;
+  const before = previous.inscription || {};
+  const after = next.inscription || {};
+  if (before.eyebrow !== after.eyebrow || before.title !== after.title || before.line !== after.line) return false;
+  if (previous.photos.length !== next.photos.length) return false;
+  return previous.photos.every((photo, index) => (
+    photo.id === next.photos[index]?.id && photo.previewPath === next.photos[index]?.previewPath
+  ));
+}
+
+const AlbumBook = memo(function AlbumBook({ bookRef, photos, showNote, inscription, reduced, onOpen, onFlip }) {
+  const last = photos.length - 1;
+
+  return (
+    <HTMLFlipBook
+      ref={bookRef}
+      className="wedding-album"
+      width={480}
+      height={640}
+      size="stretch"
+      minWidth={260}
+      maxWidth={520}
+      minHeight={360}
+      maxHeight={720}
+      drawShadow={!reduced}
+      flippingTime={reduced ? 1 : 850}
+      usePortrait
+      autoSize
+      maxShadowOpacity={0.35}
+      showCover
+      mobileScrollSupport
+      swipeDistance={30}
+      clickEventForward
+      useMouseEvents
+      showPageCorners={!reduced}
+      disableFlipByClick
+      startZIndex={2}
+      onFlip={onFlip}
+      renderOnlyPageLengthChange
+    >
+      {[
+        showNote ? (
+          <NoteSheet
+            key="album-note"
+            eyebrow={inscription.eyebrow}
+            title={inscription.title}
+            line={inscription.line}
+          />
+        ) : null,
+        ...photos.map((photo, photoIndex) => (
+          <AlbumSheet
+            key={photo.id}
+            photo={photo}
+            eager={photoIndex < 2}
+            hard={(!showNote && photoIndex === 0) || photoIndex === last}
+            onOpen={() => onOpen(photoIndex)}
+          />
+        )),
+      ].filter(Boolean)}
+    </HTMLFlipBook>
+  );
+}, sameAlbum);
 
 const AlbumSheet = forwardRef(function AlbumSheet({ photo, eager, hard, onOpen }, ref) {
   return (
@@ -131,8 +195,6 @@ export function HomeSlider({ photos, note = null }) {
     if (event.key === 'ArrowLeft') turn(-1);
   }
 
-  const last = count - 1;
-
   return (
     <div
       ref={rootRef}
@@ -142,53 +204,16 @@ export function HomeSlider({ photos, note = null }) {
       aria-label="Wedding album"
       onKeyDown={onKey}
     >
-      <div className="flex justify-center">
-        <HTMLFlipBook
-          ref={bookRef}
-          className="wedding-album"
-          width={480}
-          height={640}
-          size="stretch"
-          minWidth={260}
-          maxWidth={520}
-          minHeight={360}
-          maxHeight={720}
-          drawShadow={!reduced}
-          flippingTime={reduced ? 1 : 850}
-          usePortrait
-          autoSize
-          maxShadowOpacity={0.35}
-          showCover
-          mobileScrollSupport
-          swipeDistance={30}
-          clickEventForward
-          useMouseEvents
-          showPageCorners={!reduced}
-          disableFlipByClick
-          startZIndex={2}
+      <div className="mx-auto flex w-full max-w-[520px] justify-center overflow-x-clip">
+        <AlbumBook
+          bookRef={bookRef}
+          photos={photos}
+          showNote={showNote}
+          inscription={inscription}
+          reduced={reduced}
+          onOpen={openPhoto}
           onFlip={onFlip}
-          renderOnlyPageLengthChange
-        >
-          {[
-            showNote ? (
-              <NoteSheet
-                key="album-note"
-                eyebrow={inscription.eyebrow}
-                title={inscription.title}
-                line={inscription.line}
-              />
-            ) : null,
-            ...photos.map((photo, photoIndex) => (
-              <AlbumSheet
-                key={photo.id}
-                photo={photo}
-                eager={photoIndex < 2}
-                hard={(!showNote && photoIndex === 0) || photoIndex === last}
-                onOpen={() => openPhoto(photoIndex)}
-              />
-            )),
-          ].filter(Boolean)}
-        </HTMLFlipBook>
+        />
       </div>
       <p className="text-muted mt-4 text-center text-xs tracking-[0.18em] uppercase">
         Turn from the corner · View opens the photograph

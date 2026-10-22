@@ -20,7 +20,7 @@ const HOME_SECTIONS = [
     sortOrder: 1,
     configuration: {
       eyebrow: 'Together',
-      description: 'Two people. One story. A thousand memories.',
+      description: 'Roshni. Rohit. The look between them, and the day two lives became one house.',
     },
   },
   {
@@ -85,12 +85,12 @@ const HOME_SECTIONS = [
   },
   {
     key: 'timeline',
-    title: 'How the day unfolded',
+    title: 'From tel to forever',
     type: WEBSITE_SECTION_TYPES.TIMELINE,
     sortOrder: 8,
     configuration: {
-      eyebrow: 'The hours',
-      description: 'Four chapters. Each one has a title, a short line, and a door into the photographs.',
+      eyebrow: 'Our story',
+      description: 'Four days the family gathered. Tel, haldi, sangeet, and then the vows. On 1 May, Roshni became Rohit’s life partner and ardhangini.',
     },
   },
   {
@@ -110,7 +110,7 @@ const HOME_SECTIONS = [
     sortOrder: 10,
     configuration: {
       eyebrow: 'In passing',
-      description: 'A small, unordered set from the day. They change each time you open the house.',
+      description: 'A small set of the two of them, hung the way the rest of the house is hung.',
     },
   },
   {
@@ -120,7 +120,7 @@ const HOME_SECTIONS = [
     sortOrder: 11,
     configuration: {
       eyebrow: 'Highlighted',
-      description: 'A few photographs kept at the front of the collection.',
+      description: 'A few photographs of Rohit and Roshni kept at the front of the collection.',
     },
   },
   {
@@ -135,12 +135,12 @@ const HOME_SECTIONS = [
   },
   {
     key: 'private',
-    title: 'Signed in, kept private',
+    title: 'This house stays private',
     type: WEBSITE_SECTION_TYPES.FAMILY,
     sortOrder: 13,
     configuration: {
-      eyebrow: 'For family',
-      description: 'Only people with an account can open the photographs. Nothing from the library is stored on this server.',
+      eyebrow: 'Email and password',
+      description: 'The photographs open with the email and password given to you. Super admin holds the master login the same way — not through Google.',
     },
   },
   {

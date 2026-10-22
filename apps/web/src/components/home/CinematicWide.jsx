@@ -13,22 +13,22 @@ import { useInView } from '@/components/gallery/useGalleryMotion';
  *   onOpen: (index: number) => void,
  * }} props
  */
-export function CinematicWide({ eyebrow, title, description, feature, photos, onOpen }) {
+export function CinematicWide({ id, eyebrow, title, description, feature, photos, onOpen }) {
   const ref = useRef(null);
   const shown = useInView(ref);
   const side = photos.slice(0, 2);
 
   return (
-    <section ref={ref} className={`wide-section ${shown ? 'is-shown' : ''}`}>
+    <section id={id} ref={ref} className={`wide-section scroll-mt-20 ${shown ? 'is-shown' : ''}`}>
       <div className="mx-auto w-full max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <p className="text-gold text-[11px] font-medium tracking-[0.32em] uppercase">{eyebrow || 'Cinematic'}</p>
-        <h2 className="font-serif mt-3 text-4xl sm:text-6xl">{title}</h2>
+        <h2 className="font-serif mt-3 text-[clamp(2.2rem,9vw,3.75rem)]">{title}</h2>
       </div>
       {feature ? (
         <button type="button" className="wide-feature reveal-rise" data-label="couple-drone" onClick={() => onOpen(0)}>
           <img
             src={feature.previewPath}
-            alt={feature.name || 'Wide wedding photograph'}
+            alt={feature.alt || feature.name || 'Wide wedding photograph'}
             loading="lazy"
             decoding="async"
             className="art-img"

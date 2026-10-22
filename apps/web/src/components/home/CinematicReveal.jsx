@@ -10,15 +10,15 @@ import { useInView } from '@/components/gallery/useGalleryMotion';
  *   onOpen: (index: number) => void,
  * }} props
  */
-export function CinematicReveal({ title, description, photos, onOpen }) {
+export function CinematicReveal({ id, title, description, photos, onOpen }) {
   const ref = useRef(null);
   const shown = useInView(ref);
   const frames = photos.slice(0, 4);
   const lead = frames[0];
 
   return (
-    <section ref={ref} className={`wow-section ${shown ? 'is-shown' : ''}`}>
-      <div className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+    <section id={id} ref={ref} className={`wow-section scroll-mt-20 ${shown ? 'is-shown' : ''}`}>
+      <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-32">
         <p className="text-[11px] font-medium tracking-[0.32em] text-white/55 uppercase">A quiet reveal</p>
         {lead ? (
           <div className="wow-stage">

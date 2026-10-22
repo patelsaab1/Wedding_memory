@@ -14,7 +14,7 @@ const tones = {
  */
 export function Band({ id, tone = 'ivory', children, className = '' }) {
   return (
-    <section id={id} className={`scroll-mt-20 py-16 sm:py-24 ${tones[tone]} ${className}`}>
+    <section id={id} className={`scroll-mt-20 py-10 sm:py-24 ${tones[tone]} ${className}`}>
       <Container wide>{children}</Container>
     </section>
   );
