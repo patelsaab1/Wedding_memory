@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 
 /**
  * Full-screen viewer for photographs already loaded from the gallery.
@@ -86,7 +87,7 @@ export function PhotoLightbox({ photos, index, onClose, onIndex }) {
           onIndex(delta < 0 ? (index + 1) % photos.length : (index - 1 + photos.length) % photos.length);
         }}
       >
-        <img src={photo.fullPath || photo.previewPath} alt={photo.name || 'Wedding photograph'} className="lightbox-img" />
+        <HouseImg photo={photo} full className="lightbox-img" loading="eager" />
         <figcaption className="lightbox-caption">
           <span>{photo.name || 'Photograph'}</span>
           <span>

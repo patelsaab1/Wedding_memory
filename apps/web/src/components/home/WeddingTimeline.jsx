@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 import { WEDDING_JOURNEY } from '@/components/home/wedding-journey';
 
 function stills(items) {
@@ -14,6 +15,8 @@ function albumCover(gallery, pattern) {
 }
 
 function asPhoto(source, fallback) {
+  const localPath = fallback.src;
+  const localFull = fallback.fallback || fallback.src;
   if (source?.previewPath) {
     return {
       id: source.id,
@@ -21,6 +24,10 @@ function asPhoto(source, fallback) {
       alt: source.alt || source.name || fallback.alt,
       previewPath: source.previewPath,
       fullPath: source.fullPath || source.previewPath,
+      localPath,
+      localFull,
+      width: fallback.width,
+      height: fallback.height,
     };
   }
   return {
@@ -29,6 +36,8 @@ function asPhoto(source, fallback) {
     alt: fallback.alt,
     previewPath: fallback.src,
     fullPath: fallback.fallback || fallback.src,
+    localPath,
+    localFull,
     width: fallback.width,
     height: fallback.height,
   };
@@ -64,7 +73,8 @@ function chapterFrames(milestone, gallery) {
 export function WeddingTimeline({ gallery, onOpen }) {
   const { eyebrow, title, description, milestones, finale } = WEDDING_JOURNEY;
   const trackRef = useRef(null);
-  const [shown, setShown] = useState(() => milestones.map(() => false));
+  const vowRef = useRef(null);
+  const [shown, setShown] = useState(() => milestones.map((_, index) => index === 0));
   const [active, setActive] = useState(0);
   const [vowShown, setVowShown] = useState(false);
 
@@ -87,6 +97,7 @@ export function WeddingTimeline({ gallery, onOpen }) {
       setVowShown(true);
     }
 
+    const phone = window.matchMedia('(max-width: 767px)').matches;
     const observer = new IntersectionObserver(
       (entries) => {
         setShown((current) => {
@@ -107,7 +118,10 @@ export function WeddingTimeline({ gallery, onOpen }) {
           .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
         if (visible) setActive(Number(visible.target.dataset.storyStep));
       },
-      { threshold: [0.28, 0.55], rootMargin: '-18% 0px -28% 0px' },
+      {
+        threshold: phone ? [0.12, 0.35] : [0.28, 0.55],
+        rootMargin: phone ? '0px 0px -10% 0px' : '-18% 0px -28% 0px',
+      },
     );
 
     steps.forEach((node) => observer.observe(node));
@@ -115,7 +129,7 @@ export function WeddingTimeline({ gallery, onOpen }) {
   }, [milestones]);
 
   useEffect(() => {
-    const node = trackRef.current?.querySelector('[data-story-vow]');
+    const node = vowRef.current;
     if (!node) return undefined;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setVowShown(true);
@@ -165,26 +179,14 @@ export function WeddingTimeline({ gallery, onOpen }) {
                 <span className="our-story__node" aria-hidden="true" />
                 <figure className="our-story__media">
                   <button type="button" className="our-story__shot" onClick={() => open(0)}>
-                    <img
+                    <HouseImg
+                      photo={chapter.frames.main}
                       className="our-story__photo"
-                      src={chapter.frames.main.previewPath}
-                      alt={chapter.frames.main.alt}
-                      width={chapter.frames.main.width || 800}
-                      height={chapter.frames.main.height || 1200}
-                      loading="lazy"
-                      decoding="async"
                     />
                   </button>
                   {chapter.frames.side ? (
                     <button type="button" className="our-story__side" onClick={() => open(1)}>
-                      <img
-                        src={chapter.frames.side.previewPath}
-                        alt={chapter.frames.side.alt}
-                        width={chapter.frames.side.width || 480}
-                        height={chapter.frames.side.height || 720}
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      <HouseImg photo={chapter.frames.side} />
                     </button>
                   ) : null}
                 </figure>
@@ -201,6 +203,7 @@ export function WeddingTimeline({ gallery, onOpen }) {
       </div>
 
       <div
+        ref={vowRef}
         data-story-vow
         className={`our-story__vow ${vowShown ? 'is-shown' : ''}`}
       >

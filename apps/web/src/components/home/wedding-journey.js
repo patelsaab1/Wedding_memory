@@ -26,11 +26,11 @@ export const WEDDING_JOURNEY = {
       albumMatch: /tel/i,
       photoKey: 'tel',
       local: {
-        src: '/wall/peek.webp',
-        fallback: '/wall/peek.jpg',
-        alt: 'Roshni smiling over her embroidered dupatta',
-        width: 720,
-        height: 480,
+        src: '/wall/henna.webp',
+        fallback: '/wall/henna.jpg',
+        alt: 'Roshni with henna on her hand',
+        width: 733,
+        height: 1100,
       },
       localSide: {
         src: '/hero/veil-480.webp',

@@ -24,6 +24,22 @@
     overflow-x: clip;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
   }
 
   #root {
@@ -327,6 +343,15 @@
   gap: 0.75rem;
 }
 
+.gallery-strip {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-strip::-webkit-scrollbar {
+  display: none;
+}
+
 .wide-section .reveal-rise {
   transform: translateY(28px);
 }
@@ -388,6 +413,7 @@
 .couple-prints {
   content-visibility: auto;
   contain-intrinsic-size: auto 40rem;
+  overflow-x: clip;
 }
 
 .art-piece {
@@ -1440,6 +1466,17 @@
     overflow: hidden;
   }
 
+  .art-wall-stage,
+  .float-stage {
+    min-height: 0;
+  }
+
+  .wide-feature .art-img {
+    max-height: none;
+    aspect-ratio: 4 / 5;
+    object-position: center 18%;
+  }
+
   .salon-hero {
     grid-column: 1 / -1;
     width: min(100%, 22rem);
@@ -1493,10 +1530,28 @@
 
   .lightbox {
     grid-template-columns: 1fr;
+    padding: 4rem 0.75rem 1.25rem;
   }
 
   .lightbox-nav {
-    display: none;
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: inline-flex;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    background: rgba(18, 16, 15, 0.55);
+  }
+
+  .lightbox-prev {
+    left: 0.4rem;
+  }
+
+  .lightbox-next {
+    right: 0.4rem;
   }
 }
 
@@ -1842,27 +1897,105 @@
 
 @media (max-width: 767px) {
   .wedding-hero__stage {
-    min-height: calc(100dvh - 3.5rem);
+    min-height: calc(100svh - 3.5rem);
+    place-items: end center;
+  }
+
+  .wedding-hero__bg {
+    object-position: center 18%;
   }
 
   .hero-float--left,
-  .hero-float--right {
-    top: 11%;
-    width: 4.6rem;
-    border-width: 2px;
-  }
-
-  .hero-float--low {
-    display: none;
-  }
-
-  .hero-spark {
+  .hero-float--right,
+  .hero-float--low,
+  .hero-spark,
+  .hero-scroll {
     display: none;
   }
 
   .wedding-hero__copy {
-    padding-top: 7.5rem;
-    padding-bottom: 3.5rem;
+    width: 100%;
+    padding: 1.25rem 1.15rem calc(1.75rem + env(safe-area-inset-bottom));
+  }
+
+  .hero-names {
+    font-size: clamp(2.15rem, 12vw, 2.85rem);
+  }
+
+  .hero-lead {
+    font-size: 0.95rem;
+  }
+
+  .hero-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    letter-spacing: 0.16em;
+  }
+
+  .hero-cta {
+    width: 100%;
+    max-width: 20rem;
+    justify-content: center;
+    min-height: 3rem;
+  }
+
+  .us-story__grid {
+    padding-top: 2.25rem;
+    padding-bottom: 2.5rem;
+    gap: 1.35rem;
+  }
+
+  .us-story__photo {
+    max-height: 58vh;
+  }
+
+  .print-gallery {
+    gap: 1.15rem;
+    margin-top: 1.75rem;
+  }
+
+  .our-story__media {
+    padding-bottom: 1.5rem;
+  }
+
+  .our-story__side {
+    width: 36%;
+    bottom: -0.35rem;
+  }
+
+  .our-story__vow {
+    min-height: 22rem;
+    padding: 3.25rem 1.15rem;
+  }
+
+  .our-story__vow-names {
+    font-size: clamp(1.85rem, 11vw, 2.5rem);
+  }
+
+  .album-open {
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+  }
+
+  .lightbox-caption {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .lightbox-close {
+    top: max(0.75rem, env(safe-area-inset-top));
+    min-height: 2.75rem;
+  }
+}
+
+@media (max-width: 379px) {
+  .hero-names {
+    font-size: clamp(1.85rem, 11vw, 2.25rem);
+  }
+
+  .wedding-hero__copy {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
   }
 }
 

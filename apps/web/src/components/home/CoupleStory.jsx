@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 import { COUPLE_STORY } from '@/components/home/couple-story';
 
 /**
@@ -66,14 +67,10 @@ export function CoupleStory({ id = 'home-couple_story', photos, onOpen }) {
           {photo?.previewPath ? (
             <figure className="us-story__frame">
               <button type="button" className="us-story__shot" onClick={() => onOpen(active)}>
-                <img
+                <HouseImg
                   key={photo.id}
-                  src={photo.previewPath}
-                  alt={photo.alt || photo.name || 'Wedding photograph'}
-                  width={photo.width || 800}
-                  height={photo.height || 1200}
+                  photo={photo}
                   loading={active === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
                   className="us-story__photo album-fade"
                   style={{ objectPosition: photo.position || 'center 18%' }}
                 />

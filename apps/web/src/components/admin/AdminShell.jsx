@@ -132,7 +132,7 @@ export function AdminShell({ title, email, menu, active, onSelect, onLogout, chi
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-stone-200 bg-white px-3 sm:px-5">
           <button
             type="button"
-            className="text-ink shrink-0 rounded-full border border-stone-300 bg-blush px-3 py-1.5 text-sm"
+            className="text-ink min-h-11 shrink-0 rounded-full border border-stone-300 bg-blush px-4 text-sm"
             aria-expanded={menuOpen}
             aria-controls="admin-sidebar"
             onClick={toggleMenu}

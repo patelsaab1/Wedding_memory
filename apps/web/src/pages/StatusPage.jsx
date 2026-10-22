@@ -127,7 +127,7 @@ export function StatusPage() {
         )}
 
         {state.status === 'success' && state.payload && (
-          <pre className="text-ink mt-6 overflow-x-auto rounded-md bg-stone-100 p-4 text-xs">
+          <pre className="text-ink mt-6 max-w-full overflow-x-auto rounded-md bg-stone-100 p-4 text-xs break-all whitespace-pre-wrap">
             {JSON.stringify(state.payload, null, 2)}
           </pre>
         )}

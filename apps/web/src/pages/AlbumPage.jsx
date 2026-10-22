@@ -5,6 +5,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 import { GalleryMedia } from '@/components/gallery/PhotoGrid';
 import { HomeSlider } from '@/components/home/HomeSlider';
+import { withLocalFallback } from '@/components/home/local-photos';
 import { getGalleryAlbum } from '@/services/gallery.service';
 import { getHomeSections } from '@/services/admin.service';
 
@@ -51,7 +52,9 @@ export function AlbumPage() {
   }, []);
 
   const title = album?.album?.title || 'Album';
-  const stills = (album?.photos || []).filter((photo) => photo?.previewPath && photo.kind !== 'video');
+  const stills = withLocalFallback(
+    (album?.photos || []).filter((photo) => photo?.previewPath && photo.kind !== 'video'),
+  );
   const films = (album?.photos || []).filter((photo) => photo?.kind === 'video');
 
   return (

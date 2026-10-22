@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Reveal } from '@/components/ui/Reveal';
 import { PhotoLightbox } from '@/components/gallery/PhotoLightbox';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
+import { withLocalFallback } from '@/components/home/local-photos';
 
 /**
  * @param {{
@@ -38,13 +40,7 @@ export function GalleryMedia({ item, className = '', layout = 'tile', onOpen }) 
 
   const figure = (
     <figure className={`photo-frame ${className}`}>
-      <img
-        src={item.previewPath}
-        alt={item.name}
-        loading="lazy"
-        decoding="async"
-        className={imageClass}
-      />
+      <HouseImg photo={item} alt={item.name} className={imageClass} />
     </figure>
   );
 
@@ -61,17 +57,18 @@ export function GalleryMedia({ item, className = '', layout = 'tile', onOpen }) 
  * @param {{ photos: Array<{ id: string, name: string, previewPath: string, kind?: string }>, className?: string }} props
  */
 export function PhotoGrid({ photos, className = '' }) {
-  const stills = (photos || []).filter((photo) => photo?.previewPath && photo.kind !== 'video');
+  const items = withLocalFallback(photos);
+  const stills = items.filter((photo) => photo?.previewPath && photo.kind !== 'video');
   const [index, setIndex] = useState(null);
 
-  if (!photos?.length) {
+  if (!items.length) {
     return null;
   }
 
   return (
     <>
       <div className={`editorial-grid ${className}`}>
-        {photos.map((photo, photoIndex) => {
+        {items.map((photo, photoIndex) => {
           const stillIndex = stills.findIndex((item) => item.id === photo.id);
           const wide = photoIndex % 5 === 0;
           return (
