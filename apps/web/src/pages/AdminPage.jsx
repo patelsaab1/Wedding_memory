@@ -25,7 +25,7 @@ const MENU = [
   { id: 'photos', label: 'Photographs', mark: '05' },
 ];
 
-const fieldClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-gold';
+const fieldClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-base outline-none focus:border-gold';
 
 function moveItem(list, index, direction) {
   const next = [...list];

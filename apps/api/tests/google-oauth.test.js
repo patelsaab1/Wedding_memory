@@ -20,5 +20,20 @@ describe('Google Drive OAuth URL', () => {
     expect(url.searchParams.get('prompt')).toBe('consent');
     expect(url.searchParams.get('scope')).toBe('https://www.googleapis.com/auth/drive.readonly');
     expect(url.searchParams.get('client_secret')).toBeNull();
+    expect(url.searchParams.get('login_hint')).toBeNull();
+  });
+
+  it('asks Google to open the house Gmail when a login hint is given', () => {
+    const url = new URL(
+      buildGoogleDriveAuthUrl({
+        clientId: 'client-id.apps.googleusercontent.com',
+        redirectUri: 'https://wedding-memory-cdid.onrender.com/api/v1/storage/google/callback',
+        state: 'state-token',
+        loginHint: 'rohitroshnipatel@gmail.com',
+      }),
+    );
+
+    expect(url.searchParams.get('login_hint')).toBe('rohitroshnipatel@gmail.com');
+    expect(url.searchParams.get('client_secret')).toBeNull();
   });
 });

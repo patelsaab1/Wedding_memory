@@ -47,7 +47,7 @@ export function CinematicReveal({ id, title, description, photos, onOpen }) {
           <p className="mt-8 text-sm text-white/70">A photograph will reveal itself here.</p>
         )}
         <div className="wow-copy">
-          <h2 className="font-serif text-5xl text-white sm:text-7xl">{title}</h2>
+          <h2 className="font-serif text-[clamp(2.2rem,9vw,4.5rem)] text-white sm:text-7xl">{title}</h2>
           {description ? <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">{description}</p> : null}
         </div>
       </div>

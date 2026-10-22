@@ -28,9 +28,11 @@ import { Band } from '@/components/ui/Band';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 import { useCurrentUser } from '@/features/auth/useAuth';
+import { houseFallbackPhotos, withLocalFallback } from '@/components/home/local-photos';
 import { getHomeSections } from '@/services/admin.service';
 import { getGallery } from '@/services/gallery.service';
 import { isSuperAdmin } from '@wedding-memory/shared';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 
 const moments = [
   {
@@ -93,6 +95,8 @@ function numberedPhotos(pool) {
 
 function curatedPhotos(set, pool) {
   return set.map((piece) => {
+    const localPath = piece.previewPath;
+    const localFull = piece.fullPath || piece.previewPath;
     const fromDrive = pool.find((item) => item.name?.toLowerCase() === piece.file.toLowerCase());
     if (fromDrive?.previewPath) {
       return {
@@ -100,9 +104,11 @@ function curatedPhotos(set, pool) {
         id: fromDrive.id,
         previewPath: fromDrive.previewPath,
         fullPath: fromDrive.fullPath || fromDrive.previewPath,
+        localPath,
+        localFull,
       };
     }
-    return piece;
+    return { ...piece, localPath, localFull };
   });
 }
 
@@ -196,7 +202,12 @@ export function HomePage() {
   }, [hash, sectionsSettled, gallery]);
 
   const slides = useMemo(() => slidePhotos(gallery), [gallery]);
-  const bookPhotos = useMemo(() => explorePhotos(slides), [slides]);
+  const bookPhotos = useMemo(() => {
+    const fromDrive = withLocalFallback(explorePhotos(slides));
+    if (fromDrive.length) return fromDrive;
+    if (gallery !== null || error) return houseFallbackPhotos();
+    return [];
+  }, [slides, gallery, error]);
   const albumNote = homeSections.find((item) => item.key === 'album_note');
   const houseStills = useMemo(() => uniquePhotos([
     ...stills(gallery?.couple),
@@ -312,10 +323,8 @@ export function HomePage() {
             {scattered.map((photo, index) => (
               <Reveal key={photo.id} delay={Math.min(index, 6) * 60} className={index % 5 === 0 ? 'sm:col-span-2' : ''}>
                 <button type="button" className="block w-full cursor-pointer border-0 bg-transparent p-0" onClick={() => openViewer(scattered, index)}>
-                  <img
-                    src={photo.previewPath}
-                    alt={photo.alt || photo.name}
-                    loading="lazy"
+                  <HouseImg
+                    photo={photo}
                     className={`w-full rounded-2xl object-cover ${index % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}
                   />
                 </button>
@@ -342,12 +351,7 @@ export function HomePage() {
             {highlights.map((photo, index) => (
               <Reveal key={photo.id} delay={Math.min(index, 5) * 50}>
                 <Link to="/gallery#featured" className="photo-frame block">
-                  <img
-                    src={photo.previewPath}
-                    alt={photo.alt || photo.name}
-                    loading="lazy"
-                    className="aspect-[4/5] w-full object-cover"
-                  />
+                  <HouseImg photo={photo} className="aspect-[4/5] w-full object-cover" />
                 </Link>
               </Reveal>
             ))}

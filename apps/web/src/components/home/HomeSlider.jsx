@@ -1,6 +1,7 @@
 import { forwardRef, memo, useCallback, useEffect, useRef, useState } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import { PhotoLightbox } from '@/components/gallery/PhotoLightbox';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 
 const STORY_MS = 4500;
 
@@ -83,12 +84,11 @@ const AlbumBook = memo(function AlbumBook({ bookRef, photos, showNote, inscripti
 const AlbumSheet = forwardRef(function AlbumSheet({ photo, eager, hard, onOpen }, ref) {
   return (
     <article ref={ref} className="album-sheet" data-density={hard ? 'hard' : 'soft'}>
-      <img
-        src={photo.previewPath}
+      <HouseImg
+        photo={photo}
         alt=""
-        decoding="async"
         loading={eager ? 'eager' : 'lazy'}
-        draggable="false"
+        className="h-full w-full object-cover"
       />
       <button
         type="button"
@@ -216,7 +216,8 @@ export function HomeSlider({ photos, note = null }) {
         />
       </div>
       <p className="text-muted mt-4 text-center text-xs tracking-[0.18em] uppercase">
-        Turn from the corner · View opens the photograph
+        <span className="sm:hidden">Swipe to turn · View opens the photograph</span>
+        <span className="hidden sm:inline">Turn from the corner · View opens the photograph</span>
       </p>
       <div className="bg-blush mt-4 h-0.5 overflow-hidden">
         <div

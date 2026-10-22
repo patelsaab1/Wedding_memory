@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { ArtisticPhoto } from '@/components/gallery/ArtisticPhoto';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
 import { useInView } from '@/components/gallery/useGalleryMotion';
 
 /**
@@ -26,11 +27,8 @@ export function CinematicWide({ id, eyebrow, title, description, feature, photos
       </div>
       {feature ? (
         <button type="button" className="wide-feature reveal-rise" data-label="couple-drone" onClick={() => onOpen(0)}>
-          <img
-            src={feature.previewPath}
-            alt={feature.alt || feature.name || 'Wide wedding photograph'}
-            loading="lazy"
-            decoding="async"
+          <HouseImg
+            photo={feature}
             className="art-img"
           />
         </button>

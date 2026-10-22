@@ -1,12 +1,17 @@
 import { randomBytes } from 'node:crypto';
+import { createSuccessResponse, SUPER_ADMIN_EMAIL } from '@wedding-memory/shared';
 import { config } from '../config/index.js';
-import { notFoundError } from '../utils/errors.js';
 import { storageNotConfiguredError } from '../services/storage/storage.errors.js';
 import {
   buildGoogleDriveAuthUrl,
   exchangeGoogleDriveCode,
   saveGoogleDriveRefreshToken,
 } from '../services/storage/google-oauth.js';
+import {
+  getDriveTokenPublicStatus,
+  persistDriveRefreshToken,
+  probeDriveConnection,
+} from '../services/storage/drive-token.store.js';
 
 const STATE_COOKIE = 'wm_gdrive_oauth_state';
 
@@ -14,35 +19,116 @@ const STATE_COOKIE = 'wm_gdrive_oauth_state';
  * @param {import('express').Request} req
  */
 function redirectUriFor(req) {
+  if (config.storage.googleDrive.redirectUri) {
+    return config.storage.googleDrive.redirectUri;
+  }
   return `${req.protocol}://${req.get('host')}/api/v1/storage/google/callback`;
 }
 
 /**
- * @param {string} value
+ * @param {import('express').Request} req
  */
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+function appOrigin(req) {
+  if (config.isProduction) {
+    return `${req.protocol}://${req.get('host')}`;
+  }
+  return config.corsOrigin[0] || 'http://localhost:5173';
+}
+
+function statusPath(query) {
+  return `/status?${new URLSearchParams(query).toString()}`;
 }
 
 /**
- * @param {string} title
- * @param {string} body
+ * Super admin: current Drive token status. Never returns secrets.
  */
-function htmlPage(title, body) {
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title></head><body><h1>${escapeHtml(title)}</h1>${body}</body></html>`;
+export async function googleDriveStatus(_req, res, next) {
+  try {
+    const status = await getDriveTokenPublicStatus();
+    const probe = status.hasRefreshToken
+      ? await probeDriveConnection()
+      : { connected: false, needsUpdate: true, message: status.lastError || 'Drive token is missing. Update the token from Status.' };
+    res.json(
+      createSuccessResponse({
+        ...status,
+        connected: probe.connected,
+        needsUpdate: probe.needsUpdate,
+        message: probe.message || status.lastError,
+      }),
+    );
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
- * Opens Google consent, then on return exchanges the code for a refresh token.
+ * Super admin: try the stored refresh token. If it is missing or revoked, say so.
+ */
+export async function googleDriveRefresh(req, res, next) {
+  try {
+    const result = await probeDriveConnection();
+    res.json(createSuccessResponse(result));
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Super admin: open Google as the house Drive account and ask for a new refresh token.
+ */
+export async function googleDriveConnect(req, res, next) {
+  try {
+    const { clientId, clientSecret } = config.storage.googleDrive;
+    if (!clientId || !clientSecret) {
+      throw storageNotConfiguredError('google_drive', ['clientId', 'clientSecret']);
+    }
+
+    const redirectUri = redirectUriFor(req);
+    const state = randomBytes(24).toString('hex');
+    res.cookie(STATE_COOKIE, state, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: config.auth.cookieSecure,
+      maxAge: 10 * 60 * 1000,
+      path: '/api/v1/storage/google',
+    });
+    res.redirect(
+      buildGoogleDriveAuthUrl({
+        clientId,
+        redirectUri,
+        state,
+        loginHint: SUPER_ADMIN_EMAIL,
+      }),
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Google returns here. Save the refresh token on the server and send the master back to Status.
  */
 export async function googleDriveCallback(req, res, next) {
   try {
-    if (config.isProduction) {
-      throw notFoundError();
+    const origin = appOrigin(req);
+    const oauthError = typeof req.query.error === 'string' ? req.query.error : '';
+
+    if (oauthError) {
+      res.redirect(`${origin}${statusPath({ drive: 'failed' })}`);
+      return;
+    }
+
+    const code = typeof req.query.code === 'string' ? req.query.code : '';
+    if (!code) {
+      res.redirect(`${origin}${statusPath({ drive: 'failed' })}`);
+      return;
+    }
+
+    const expectedState = req.cookies?.[STATE_COOKIE];
+    const state = typeof req.query.state === 'string' ? req.query.state : '';
+    if (!expectedState || expectedState !== state) {
+      res.redirect(`${origin}${statusPath({ drive: 'failed' })}`);
+      return;
     }
 
     const { clientId, clientSecret } = config.storage.googleDrive;
@@ -50,87 +136,28 @@ export async function googleDriveCallback(req, res, next) {
       throw storageNotConfiguredError('google_drive', ['clientId', 'clientSecret']);
     }
 
-    const redirectUri = redirectUriFor(req);
-    const oauthError = typeof req.query.error === 'string' ? req.query.error : '';
-
-    if (oauthError) {
-      const description =
-        typeof req.query.error_description === 'string' ? req.query.error_description : oauthError;
-      res
-        .status(400)
-        .type('html')
-        .send(
-          htmlPage(
-            'Google Drive connection was cancelled',
-            `<p>${escapeHtml(description)}</p><p><a href="${escapeHtml(redirectUri)}">Try again</a></p>`,
-          ),
-        );
-      return;
-    }
-
-    const code = typeof req.query.code === 'string' ? req.query.code : '';
-
-    if (!code) {
-      const state = randomBytes(24).toString('hex');
-      res.cookie(STATE_COOKIE, state, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
-        maxAge: 10 * 60 * 1000,
-        path: '/api/v1/storage/google',
-      });
-      res.redirect(buildGoogleDriveAuthUrl({ clientId, redirectUri, state }));
-      return;
-    }
-
-    const expectedState = req.cookies?.[STATE_COOKIE];
-    const state = typeof req.query.state === 'string' ? req.query.state : '';
-    if (!expectedState || expectedState !== state) {
-      res
-        .status(400)
-        .type('html')
-        .send(
-          htmlPage(
-            'Google sign-in could not be verified',
-            `<p>Open the callback link again so a new sign-in can start.</p><p><a href="${escapeHtml(redirectUri)}">Start again</a></p>`,
-          ),
-        );
-      return;
-    }
-
     const tokens = await exchangeGoogleDriveCode({
       code,
       clientId,
       clientSecret,
-      redirectUri,
+      redirectUri: redirectUriFor(req),
     });
 
     res.clearCookie(STATE_COOKIE, { path: '/api/v1/storage/google' });
 
     if (!tokens.refreshToken) {
-      res
-        .status(502)
-        .type('html')
-        .send(
-          htmlPage(
-            'Google did not return a refresh token',
-            '<p>Remove Wedding Memory access at <a href="https://myaccount.google.com/permissions">Google Account permissions</a>, then open the callback link again.</p>',
-          ),
-        );
+      res.redirect(`${origin}${statusPath({ drive: 'failed' })}`);
       return;
     }
 
-    saveGoogleDriveRefreshToken(tokens.refreshToken);
+    await persistDriveRefreshToken(tokens.refreshToken, req.user?.email || SUPER_ADMIN_EMAIL);
+    try {
+      saveGoogleDriveRefreshToken(tokens.refreshToken);
+    } catch {
+      // Live hosts have no writable apps/api/.env. Mongo is the source of truth.
+    }
 
-    res
-      .status(200)
-      .type('html')
-      .send(
-        htmlPage(
-          'Google Drive connected',
-          `<p>Refresh token saved in <code>apps/api/.env</code> as <code>GOOGLE_DRIVE_REFRESH_TOKEN</code>.</p><p>Access token received. It expires in ${escapeHtml(String(tokens.expiresIn ?? 'unknown'))} seconds.</p><p>Restart the API so the gallery can read the Photos folder.</p><pre>${escapeHtml(tokens.refreshToken)}</pre>`,
-        ),
-      );
+    res.redirect(`${origin}${statusPath({ drive: 'connected' })}`);
   } catch (error) {
     next(error);
   }

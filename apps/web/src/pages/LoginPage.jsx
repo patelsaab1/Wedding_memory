@@ -59,7 +59,7 @@ export function LoginPage() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-stone-200 bg-surface px-3 py-2.5 text-sm outline-none focus:border-gold"
+              className="w-full rounded-xl border border-stone-200 bg-surface px-3 py-3 text-base outline-none focus:border-gold"
             />
           </label>
 
@@ -73,7 +73,7 @@ export function LoginPage() {
                 minLength={8}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-xl border border-stone-200 bg-surface py-2.5 pr-11 pl-3 text-sm outline-none focus:border-gold"
+                className="w-full rounded-xl border border-stone-200 bg-surface py-3 pr-11 pl-3 text-base outline-none focus:border-gold"
               />
               <button
                 type="button"
@@ -93,7 +93,7 @@ export function LoginPage() {
             </p>
           ) : null}
 
-          <Button type="submit" disabled={submitting} className="!bg-wine w-full !rounded-full !py-2.5">
+          <Button type="submit" disabled={submitting} className="!bg-wine min-h-11 w-full !rounded-full">
             {submitting ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>

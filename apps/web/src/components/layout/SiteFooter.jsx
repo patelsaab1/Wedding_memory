@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSuperAdmin } from '@wedding-memory/shared';
 import { useAuth } from '@/features/auth/useAuth';
+import { HouseImg } from '@/components/gallery/useHouseSrc';
+import { houseFallbackPhotos } from '@/components/home/local-photos';
 import { getGallery } from '@/services/gallery.service';
 
 const links = [
@@ -24,15 +26,17 @@ function lastStill(gallery) {
 export function SiteFooter() {
   const { user } = useAuth();
   const showAdmin = isSuperAdmin(user);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(() => houseFallbackPhotos()[0] || null);
 
   useEffect(() => {
     let active = true;
     getGallery()
       .then((gallery) => {
-        if (active) setPhoto(lastStill(gallery));
+        if (active) setPhoto(lastStill(gallery) || houseFallbackPhotos()[0] || null);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (active) setPhoto(houseFallbackPhotos()[0] || null);
+      });
     return () => {
       active = false;
     };
@@ -45,12 +49,9 @@ export function SiteFooter() {
         <p className="font-serif text-ink mt-3 text-4xl sm:text-5xl">Rohit & Roshni</p>
         {photo ? (
           <figure className="forever-float mx-auto mt-10 w-44 sm:w-56">
-            <img
-              src={photo.previewPath}
-              alt={photo.name || 'Rohit and Roshni'}
+            <HouseImg
+              photo={photo}
               className="aspect-[3/4] w-full rounded-[1.6rem] object-cover shadow-[0_18px_40px_rgba(122,48,64,0.18)]"
-              loading="lazy"
-              decoding="async"
             />
           </figure>
         ) : null}
@@ -75,7 +76,7 @@ export function SiteFooter() {
             <p className="text-[11px] font-medium tracking-[0.28em] text-white/60 uppercase">Visit</p>
             <nav className="flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
               {links.map((link) => (
-                <Link key={link.to} to={link.to} className="text-sm text-white/85 transition-colors duration-500 ease-in-out hover:text-white">
+                <Link key={link.to} to={link.to} className="inline-flex min-h-11 items-center text-sm text-white/85 transition-colors duration-500 ease-in-out hover:text-white">
                   {link.label}
                 </Link>
               ))}

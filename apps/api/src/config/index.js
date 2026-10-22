@@ -43,6 +43,7 @@ const envSchema = z.object({
   GOOGLE_DRIVE_CLIENT_SECRET: optionalSecret,
   GOOGLE_DRIVE_REFRESH_TOKEN: optionalSecret,
   GOOGLE_DRIVE_ROOT_FOLDER_ID: optionalSecret,
+  GOOGLE_DRIVE_REDIRECT_URI: optionalSecret,
   // Cloudflare R2 — server-side only; leave empty until credentials are provisioned
   R2_ACCOUNT_ID: optionalSecret,
   R2_ACCESS_KEY_ID: optionalSecret,
@@ -96,6 +97,7 @@ export const config = Object.freeze({
       clientSecret: env.GOOGLE_DRIVE_CLIENT_SECRET,
       refreshToken: env.GOOGLE_DRIVE_REFRESH_TOKEN,
       rootFolderId: env.GOOGLE_DRIVE_ROOT_FOLDER_ID,
+      redirectUri: env.GOOGLE_DRIVE_REDIRECT_URI,
     }),
     r2: Object.freeze({
       accountId: env.R2_ACCOUNT_ID,

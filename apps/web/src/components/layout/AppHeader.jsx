@@ -42,7 +42,7 @@ function ChapterList({ onPick, className = '' }) {
           <Link
             key={chapter.key}
             to={{ pathname: '/', hash: `home-${chapter.key}` }}
-            className="text-ink hover:bg-blush rounded-xl px-2 py-2.5 text-sm leading-snug"
+            className="text-ink hover:bg-blush inline-flex min-h-11 items-center rounded-xl px-2 py-2.5 text-sm leading-snug"
             onClick={(event) => goChapter(event, chapter.key)}
           >
             {chapter.label}
@@ -85,7 +85,7 @@ export function AppHeader() {
 
   return (
     <header className={`sticky top-0 z-40 border-b transition-[background-color,box-shadow] duration-500 ease-in-out ${scrolled ? 'border-stone-200/80 bg-white/95 shadow-sm' : 'border-transparent bg-white'}`}>
-      <Container wide className="flex min-h-14 items-center justify-between gap-2 py-2 sm:min-h-16 sm:gap-3">
+      <Container wide className="flex min-h-14 items-center justify-between gap-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:min-h-16 sm:gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 sm:gap-3">
             <Link to="/" className="font-serif text-ink truncate text-base tracking-wide sm:text-lg" onClick={() => setOpen(false)}>
@@ -148,7 +148,7 @@ export function AppHeader() {
 
         <button
           type="button"
-          className="text-ink shrink-0 rounded-full border border-stone-300 px-3 py-1.5 text-sm md:hidden"
+          className="text-ink min-h-11 shrink-0 rounded-full border border-stone-300 px-4 text-sm md:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((value) => !value)}
@@ -165,7 +165,7 @@ export function AppHeader() {
                 key={link.to}
                 to={link.to}
                 end={link.end}
-                className={(state) => `nav-link ${linkClass(state)}`}
+                className={(state) => `nav-link inline-flex min-h-11 items-center ${linkClass(state)}`}
                 onClick={() => setOpen(false)}
               >
                 {link.label}
@@ -184,7 +184,7 @@ export function AppHeader() {
               </p>
             ) : null}
             {isAuthenticated ? (
-              <button type="button" className="nav-link text-left text-sm" onClick={() => logout()}>
+              <button type="button" className="nav-link inline-flex min-h-11 items-center text-left text-sm" onClick={() => logout()}>
                 Sign out
               </button>
             ) : null}

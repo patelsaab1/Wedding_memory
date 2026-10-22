@@ -38,6 +38,7 @@ export function useInView(ref) {
       return undefined;
     }
 
+    const phone = window.matchMedia('(max-width: 767px)').matches;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -45,7 +46,10 @@ export function useInView(ref) {
           observer.disconnect();
         }
       },
-      { threshold: 0.22, rootMargin: '0px 0px -8% 0px' },
+      {
+        threshold: phone ? 0.08 : 0.22,
+        rootMargin: phone ? '0px 0px -4% 0px' : '0px 0px -8% 0px',
+      },
     );
     observer.observe(node);
     return () => observer.disconnect();

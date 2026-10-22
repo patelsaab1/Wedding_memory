@@ -1,3 +1,5 @@
+import { HouseImg } from '@/components/gallery/useHouseSrc';
+
 /**
  * One photograph presented as a print, frame, or pinned photo.
  * @param {{
@@ -32,13 +34,7 @@ export function ArtisticPhoto({
       onClick={onOpen}
     >
       <span className="art-mat">
-        <img
-          src={photo.previewPath}
-          alt={photo.alt || photo.name || 'Wedding photograph'}
-          loading="lazy"
-          decoding="async"
-          className="art-img"
-        />
+        <HouseImg photo={photo} className="art-img" />
       </span>
       {caption ? <span className="art-caption">{caption}</span> : null}
     </button>

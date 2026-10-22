@@ -6,6 +6,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { SectionIntro } from '@/components/ui/SectionIntro';
 import { GalleryMedia, PhotoGrid } from '@/components/gallery/PhotoGrid';
 import { TreasureTrailer } from '@/components/home/TreasureTrailer';
+import { houseFallbackPhotos, withLocalFallback } from '@/components/home/local-photos';
 import { getGallery } from '@/services/gallery.service';
 
 export function GalleryPage() {
@@ -33,6 +34,18 @@ export function GalleryPage() {
   }, []);
 
   const coupleName = gallery?.coupleName || 'Rohit & Roshni';
+  const houseFrames = houseFallbackPhotos();
+  const featuredPhotos = gallery?.featured?.length
+    ? withLocalFallback(gallery.featured)
+    : loading
+      ? []
+      : houseFrames;
+  const stripPhotos = gallery?.slider?.length
+    ? withLocalFallback(gallery.slider)
+    : loading
+      ? []
+      : houseFrames.slice(0, 8);
+  const usingHouseFrames = !loading && !gallery?.featured?.length;
 
   return (
     <div>
@@ -46,16 +59,16 @@ export function GalleryPage() {
               Haldi, featured frames, and the albums saved in the Photos folder.
             </p>
             <div className="mt-8 flex flex-wrap gap-2 text-sm">
-              <a href="#treasure" className="rounded-full border border-stone-300 px-4 py-2">
+              <a href="#treasure" className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4">
                 Trailer
               </a>
-              <a href="#featured" className="rounded-full border border-stone-300 px-4 py-2">
+              <a href="#featured" className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4">
                 Featured
               </a>
-              <a href="#haldi" className="rounded-full border border-stone-300 px-4 py-2">
+              <a href="#haldi" className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4">
                 Haldi
               </a>
-              <a href="#albums" className="rounded-full border border-stone-300 px-4 py-2">
+              <a href="#albums" className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4">
                 Albums
               </a>
             </div>
@@ -84,16 +97,16 @@ export function GalleryPage() {
           <SectionIntro
             eyebrow="Drive"
             title="Photos are almost here"
-            description={gallery.message}
+            description={`${gallery.message || 'The Drive folders are still opening.'} The house frames below stay with you until then.`}
           />
         </Band>
       ) : null}
 
-      {gallery?.slider?.length ? (
+      {stripPhotos.length ? (
         <section className="bg-blush py-8 sm:py-12">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-            <div className="flex snap-x gap-3 overflow-x-auto pb-2 sm:gap-4">
-              {gallery.slider.map((photo) => (
+            <div className="gallery-strip flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:gap-4">
+              {stripPhotos.map((photo) => (
                 <GalleryMedia
                   key={photo.id}
                   item={photo}
@@ -110,10 +123,14 @@ export function GalleryPage() {
         <SectionIntro
           eyebrow="Selected"
           title="Top featured"
-          description="A small set of photographs pulled from the Top Featured folder."
+          description={
+            usingHouseFrames
+              ? 'House frames from the wedding, kept here while Drive photographs open.'
+              : 'A small set of photographs pulled from the Top Featured folder.'
+          }
         />
-        {gallery?.featured?.length ? (
-          <PhotoGrid photos={gallery.featured} />
+        {featuredPhotos.length ? (
+          <PhotoGrid photos={featuredPhotos} />
         ) : (
           <p className="text-muted text-sm">Featured photos will appear when that folder has images.</p>
         )}

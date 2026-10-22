@@ -1,12 +1,14 @@
 import { createApp } from './app.js';
 import { config } from './config/index.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { hydrateDriveTokenFromStore } from './services/storage/drive-token.store.js';
 import { createLogger } from './utils/logger.js';
 
 const logger = createLogger({ level: config.logLevel, service: 'api' });
 
 async function start() {
   await connectDatabase();
+  await hydrateDriveTokenFromStore();
 
   const app = createApp();
 
